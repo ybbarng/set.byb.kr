@@ -1,13 +1,15 @@
 FROM node:22-slim
 
+RUN corepack enable
+
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml ./
 
-RUN npm ci
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-RUN npm run build
+RUN pnpm run build
 
 CMD [ "node", "server.js" ]
