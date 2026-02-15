@@ -1,40 +1,49 @@
 # Online Game SET
+
 <p align="center">
-    <img src="/preview.png" title="SET Preview" style="center;" />
+    <img src="/preview.png" title="SET Preview" />
 </p>
 
-## Run Server with Docker
+## 기술 스택
 
-### Build Image
+- Node.js 22, Express, Socket.IO 4
+- jQuery 3.7, Vite, Biome, Vitest
+- Docker 배포
+
+## Docker로 실행
+
 ```sh
-docker build -t set .
+# 이미지 빌드
+docker build -t set_app .
+
+# 컨테이너 실행
+docker run -d --name set_app --restart unless-stopped -p 127.0.0.1:8080:80 set_app
 ```
 
-### Run a container
+## Docker 없이 실행
+
 ```sh
-docker run -p 127.0.0.1:8080:80 -d set
+# 의존성 설치
+pnpm install
+
+# 개발 모드 (서버 + Vite HMR)
+pnpm dev
+
+# 프로덕션 빌드 후 실행
+pnpm build
+pnpm start
 ```
 
-## Run Server without Docker
+## 테스트 / 린트
 
-### Install Dependencies
 ```sh
-npm install
-```
-
-### Build Client
-```sh
-npm run build      # dev mode
-npm run build:p    # production mode
-```
-
-### Run Server
-```sh
-node server.js
+pnpm test
+pnpm lint
 ```
 
 ## Resources
-* Set the original boardgame : [SET | America's Favorite Card Games®](http://www.setgame.com/set) 
-* Base code from [socket.io-p2p chat example](https://github.com/socketio/socket.io-p2p/tree/master/examples/chat)
-* Card image from [vincentwoo/setgame](https://github.com/vincentwoo/setgame)
-* Animal names from [Animal Pictures Archive](http://animal.memozee.com/animal/Dic/)
+
+- Set the original boardgame: [SET | America's Favorite Card Games](http://www.setgame.com/set)
+- Base code from [socket.io-p2p chat example](https://github.com/socketio/socket.io-p2p)
+- Card image from [vincentwoo/setgame](https://github.com/vincentwoo/setgame)
+- Animal names from [Animal Pictures Archive](http://animal.memozee.com/animal/Dic/)
