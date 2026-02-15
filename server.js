@@ -1,27 +1,24 @@
-const express = require('express');
-const path = require('path');
-const compression = require('compression');
-const Game = require('./src/js/game.js');
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import compression from 'compression';
+import consoleStamp from 'console-stamp';
+import { createRequire } from 'module';
+import Game from './src/js/game.js';
+
+const require = createRequire(import.meta.url);
 const Animals = require('./data/animals.json');
 
 const app = express();
 app.use(compression());
-app.use(express.static(path.join(__dirname, 'app')));
+app.use(express.static('dist'));
 
-const oneDay = 864000000;
-app.use('/static', express.static(path.join(__dirname, 'static'), { maxAge: oneDay }));
+const http = createServer(app);
+const io = new Server(http);
 
-const http = require('http').Server(app);
-const io = require('socket.io')(http, {
-  'browser client minification': true,
-  'browser client etag': true,
-  'browser client gzip': true,
-  'browser client expires': true,
-});
+consoleStamp(console, 'yyyy-mm-dd HH:MM:ss.l');
 
-require('console-stamp')(console, 'yyyy-mm-dd HH:MM:ss.l');
-
-const PORT = 80;
+const PORT = process.env.PORT || 80;
 http.listen(PORT, () => {
   console.log('Server is started.');
   console.log(`Listening on ${PORT}`);
@@ -58,7 +55,7 @@ io.on('connection', (socket) => {
     console.log(`A peer is connected with name: ${peerId}`);
     console.log(sockets.length);
     game.connect(peerId);
-    io.sockets.emit('players', JSON.stringify(game.players));
+    io.emit('players', JSON.stringify(game.players));
     socket.emit('game-context', JSON.stringify({'isOver': game.isOver()}));
   });
 
@@ -72,7 +69,7 @@ io.on('connection', (socket) => {
     if (i !== -1) {
       sockets.splice(i, 1);
       game.disconnect(peerId);
-      io.sockets.emit('players', JSON.stringify(game.players));
+      io.emit('players', JSON.stringify(game.players));
     }
   });
 
@@ -100,10 +97,10 @@ io.on('connection', (socket) => {
       } else {
         socket.emit('system-message', 'SET이 아닙니다. (-1점)');
       }
-      io.sockets.emit('players', JSON.stringify(game.players));
-      io.sockets.emit('game-context', JSON.stringify({'isOver': game.isOver()}));
+      io.emit('players', JSON.stringify(game.players));
+      io.emit('game-context', JSON.stringify({'isOver': game.isOver()}));
     }
-    io.sockets.emit('select-card', {
+    io.emit('select-card', {
       user: peerId,
       cards,
       newCards,
@@ -114,8 +111,8 @@ io.on('connection', (socket) => {
   socket.on('reset', () => {
     console.log('Reset the game');
     game.reset();
-    io.sockets.emit('table-context', game.getTableContext());
-    io.sockets.emit('reset', null);
+    io.emit('table-context', game.getTableContext());
+    io.emit('reset', null);
   });
 
   socket.on('draw', () => {
@@ -124,17 +121,17 @@ io.on('connection', (socket) => {
       console.log('There are one or more sets');
       game.deductPoint(peerId, 1);
       socket.emit('system-message', 'SET이 존재합니다! (-1점)');
-      io.sockets.emit('players', JSON.stringify(game.players));
+      io.emit('players', JSON.stringify(game.players));
     } else {
       console.log('There is no set');
       const result = game.draw(3);
       if (result) {
         console.log('3 cards are opened');
-        io.sockets.emit('table-context', game.getTableContext());
+        io.emit('table-context', game.getTableContext());
       }
       game.addPoint(peerId, 2);
       socket.emit('system-message', 'SET이 없었습니다! (+2점)');
-      io.sockets.emit('players', JSON.stringify(game.players));
+      io.emit('players', JSON.stringify(game.players));
     }
   });
 
@@ -150,7 +147,7 @@ io.on('connection', (socket) => {
     }
     socket.emit('rename', peerId);
     if (result) {
-      io.sockets.emit('players', JSON.stringify(game.players));
+      io.emit('players', JSON.stringify(game.players));
     }
   });
 });

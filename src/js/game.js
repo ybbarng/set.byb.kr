@@ -1,6 +1,6 @@
-const Card = require('./card.js');
+import Card from './card.js';
 
-module.exports = class {
+export default class Game {
   constructor() {
     this.initiate();
   }
@@ -56,11 +56,13 @@ module.exports = class {
     if (Card.isSet(cards)) {
       this.addPoint(player, 3);
       const newCards = [];
-      cards.forEach((cardIndex) => {
+      for (const cardIndex of cards) {
         const tableIndex = this.table.indexOf(cardIndex);
         if (tableIndex === -1) {
-          console.log(`There is no such card ${cardIndex} in ${JSON.stringify(this.table)}`);
-          return;
+          console.log(
+            `There is no such card ${cardIndex} in ${JSON.stringify(this.table)}`,
+          );
+          continue;
         }
         let card = null;
         if (this.table.length <= 12) {
@@ -73,7 +75,7 @@ module.exports = class {
           this.table.splice(tableIndex, 1);
           newCards.push(-1);
         }
-      });
+      }
       this.updateSetExistence();
       return newCards;
     }
@@ -126,7 +128,9 @@ module.exports = class {
 
   addPoint(player, point) {
     if (!(player in this.players)) {
-      console.log(`There is no such player ${player} in ${JSON.stringify(this.players)}`);
+      console.log(
+        `There is no such player ${player} in ${JSON.stringify(this.players)}`,
+      );
       return;
     }
     this.players[player].score += point;
@@ -142,4 +146,4 @@ module.exports = class {
       deck: this.deck.length,
     };
   }
-};
+}

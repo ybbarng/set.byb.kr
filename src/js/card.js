@@ -3,7 +3,7 @@ const Shapes = ['OVAL', 'DIAMOND', 'SQUIGGLE'];
 const Shadings = ['SOLID', 'OPEN', 'STRIPED'];
 const Counts = [1, 2, 3];
 
-module.exports = class {
+export default class Card {
   constructor(index) {
     this.parseCard(index);
   }
@@ -32,7 +32,8 @@ module.exports = class {
     patternWrapper.className += 'pattern-wrapper';
 
     const top = Shapes.indexOf(this.shape) * 55;
-    const left = ((Colors.indexOf(this.color) * 3) + Shadings.indexOf(this.shading)) * 33;
+    const left =
+      (Colors.indexOf(this.color) * 3 + Shadings.indexOf(this.shading)) * 33;
     const style = `-${left}px -${top}px`;
 
     for (let i = 0; i < this.count; i += 1) {
@@ -46,10 +47,12 @@ module.exports = class {
   }
 
   static cardDataToInt(color, shape, shading, count) {
-    return (Colors.indexOf(color) * (3 ** 3))
-    + (Shapes.indexOf(shape) * (3 ** 2))
-    + (Shadings.indexOf(shading) * (3 ** 1))
-    + (Counts.indexOf(count) * (3 ** 0));
+    return (
+      Colors.indexOf(color) * 3 ** 3 +
+      Shapes.indexOf(shape) * 3 ** 2 +
+      Shadings.indexOf(shading) * 3 ** 1 +
+      Counts.indexOf(count) * 3 ** 0
+    );
   }
 
   static getTypeIndexes(cardIndex) {
@@ -63,12 +66,14 @@ module.exports = class {
   }
 
   static isSet(cardIndexes) {
-    return cardIndexes[2] === this.predictSetCard(cardIndexes[0], cardIndexes[1]);
+    return (
+      cardIndexes[2] === Card.predictSetCard(cardIndexes[0], cardIndexes[1])
+    );
   }
 
   static predictSetCard(cardIndex1, cardIndex2) {
-    const types1 = this.getTypeIndexes(cardIndex1);
-    const types2 = this.getTypeIndexes(cardIndex2);
+    const types1 = Card.getTypeIndexes(cardIndex1);
+    const types2 = Card.getTypeIndexes(cardIndex2);
     let predictCard = 0;
     for (let i = 0; i < 4; i += 1) {
       predictCard *= 3;
@@ -85,7 +90,7 @@ module.exports = class {
     const sets = [];
     for (let i = 0; i < table.length; i += 1) {
       for (let j = i + 1; j < table.length; j += 1) {
-        const predictCard = this.predictSetCard(table[i], table[j]);
+        const predictCard = Card.predictSetCard(table[i], table[j]);
         for (let k = j + 1; k < table.length; k += 1) {
           if (table[k] === predictCard) {
             sets.push([i + 1, j + 1, k + 1]);
@@ -98,4 +103,4 @@ module.exports = class {
     }
     return sets;
   }
-};
+}

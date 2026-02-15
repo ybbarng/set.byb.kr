@@ -55,19 +55,18 @@ $(() => {
       const selectedIndexes = [];
       $('.card.selected').each((index, value) => {
         const data = $(value).data();
-        selectedIndexes.push(Card.cardDataToInt(
-          data.color,
-          data.shape,
-          data.shading,
-          data.count,
-        ));
+        selectedIndexes.push(
+          Card.cardDataToInt(data.color, data.shape, data.shading, data.count),
+        );
       });
       socket.emit('select-card', selectedIndexes);
     }
   }
 
   function getCardView(card) {
-    return $(`.card[data-color="${card.color}"][data-shape="${card.shape}"][data-shading="${card.shading}"][data-count="${card.count}"]`);
+    return $(
+      `.card[data-color="${card.color}"][data-shape="${card.shape}"][data-shading="${card.shading}"][data-count="${card.count}"]`,
+    );
   }
 
   socket.on('message', (data) => {
@@ -79,7 +78,7 @@ $(() => {
   const cookieMyId = 'myId';
   socket.on('connect', () => {
     myId = Cookies.get(cookieMyId) || '';
-    if (myId && myId.startsWith('/#')) {
+    if (myId?.startsWith('/#')) {
       Cookies.remove(cookieMyId);
       myId = '';
     }
@@ -119,12 +118,12 @@ $(() => {
 
   socket.on('table-context', (tableContext) => {
     board.empty();
-    tableContext.table.forEach((cardIndex) => {
+    for (const cardIndex of tableContext.table) {
       const card = new Card(cardIndex);
       const cardView = $(card.getView());
       cardView.click(onClickCard);
       board.append(cardView);
-    });
+    }
     updateDeck(tableContext.deck);
   });
 
@@ -152,7 +151,7 @@ $(() => {
       interactions.css('display', 'block');
       playerList.sort((a, b) => {
         const pointOrder = players[b].score - players[a].score;
-        const nameOrder = (a < b) ? -1 : 1;
+        const nameOrder = a < b ? -1 : 1;
         return pointOrder === 0 ? nameOrder : pointOrder;
       });
     } else {
@@ -160,15 +159,21 @@ $(() => {
     }
 
     scoreboard.empty();
-    playerList.forEach((player) => {
+    for (const player of playerList) {
       const playerView = $('<div>');
       playerView.addClass('player-wrapper');
-      playerView.addClass(players[player].connected ? 'connected' : 'disconnected');
-      if (oldPlayers && players[player] && oldPlayers[player]
-          && players[player].score > oldPlayers[player].score) {
+      playerView.addClass(
+        players[player].connected ? 'connected' : 'disconnected',
+      );
+      if (
+        oldPlayers &&
+        players[player] &&
+        oldPlayers[player] &&
+        players[player].score > oldPlayers[player].score
+      ) {
         animate(playerView, 'emphasis', 500);
       }
-      const isMe = (player === myId);
+      const isMe = player === myId;
       if (isMe) {
         playerView.addClass('me');
       }
@@ -199,7 +204,7 @@ $(() => {
       playerScoreView.text(players[player].score);
       playerView.append(playerScoreView);
       scoreboard.append(playerView);
-    });
+    }
     oldPlayers = players;
   });
 
@@ -209,11 +214,11 @@ $(() => {
       $('.card.peer-selected').each((index, value) => {
         $(value).removeClass('peer-selected');
       });
-      data.cards.forEach((index) => {
+      for (const index of data.cards) {
         const card = new Card(index);
         const cardView = getCardView(card);
         cardView.addClass('peer-selected');
-      });
+      }
     }
     if (data.cards.length !== 3) {
       return;
@@ -236,8 +241,7 @@ $(() => {
           if (newCard === -1) {
             cardView.remove();
           } else {
-            const newCardView = $(new Card(newCard).getView())
-              .hide();
+            const newCardView = $(new Card(newCard).getView()).hide();
             newCardView.click(onClickCard);
             cardView.replaceWith(newCardView);
             newCardView.fadeIn();
@@ -250,7 +254,7 @@ $(() => {
   form.on('submit', (e) => {
     e.preventDefault();
     const li = $('<li>');
-    li.text((box.val()));
+    li.text(box.val());
     msgList.append(li);
     socket.emit('message', { textVal: box.val() });
     box.val('');

@@ -1,8 +1,5 @@
-app/**/*
-!app/css
-!app/css/*
-!app/static
-!app/static/*
+dist/
+node_modules/
 
 # Created by https://www.gitignore.io/api/vim,node
 
@@ -49,15 +46,8 @@ coverage
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
-# Dependency directories
-node_modules
-jspm_packages
-
 # Optional npm cache directory
 .npm
-
-# Optional eslint cache
-.eslintcache
 
 # Optional REPL history
 .node_repl_history
