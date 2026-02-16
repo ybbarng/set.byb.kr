@@ -32,7 +32,7 @@ $(() => {
   function clearSelect() {
     const selectedCards = $('.card.selected');
     if (selectedCards.length === 3) {
-      selectedCards.each((index, value) => {
+      selectedCards.each((_index, value) => {
         $(value).removeClass('selected');
       });
     }
@@ -53,7 +53,7 @@ $(() => {
     }
     if (isChanged) {
       const selectedIndexes = [];
-      $('.card.selected').each((index, value) => {
+      $('.card.selected').each((_index, value) => {
         const data = $(value).data();
         selectedIndexes.push(
           Card.cardDataToInt(data.color, data.shape, data.shading, data.count),
@@ -211,7 +211,7 @@ $(() => {
   socket.on('select-card', (data) => {
     updateDeck(data.deck);
     if (data.user !== myId) {
-      $('.card.peer-selected').each((index, value) => {
+      $('.card.peer-selected').each((_index, value) => {
         $(value).removeClass('peer-selected');
       });
       for (const index of data.cards) {
